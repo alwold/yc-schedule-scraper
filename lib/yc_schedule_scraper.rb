@@ -25,7 +25,11 @@ class YcScheduleScraper
     if results_row.nil?
       return nil
     end
-    open_seats = results_row.xpath("td")[6].xpath("span").text.to_i
+    span = results_row.xpath("td[position()=6]/span")
+    if span.nil?
+      return nil
+    end
+    open_seats = span.text.to_i
     if open_seats == 0
       :closed
     else
