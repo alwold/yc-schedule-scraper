@@ -1,5 +1,6 @@
 require 'net/http'
 require 'nokogiri'
+require 'debugger'
 require_relative 'yc_class_info'
 
 class YcScheduleScraper
@@ -10,6 +11,9 @@ class YcScheduleScraper
       return nil
     end
     cells = results_row.xpath("td")
+    if cells.length == 1
+      return nil
+    end
     name = cells[3].text
     schedule = cells[9].text
     if name != nil
