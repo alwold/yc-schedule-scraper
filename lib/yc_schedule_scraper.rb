@@ -1,6 +1,5 @@
 require 'net/http'
 require 'nokogiri'
-require 'debugger'
 require_relative 'yc_class_info'
 
 class YcScheduleScraper
@@ -29,10 +28,11 @@ class YcScheduleScraper
     if results_row.nil?
       return nil
     end
-    span = results_row.xpath("td[position()=6]/span")
-    if span.nil?
+    cells = results_row.xpath("td")
+    if cells.length == 1
       return nil
     end
+    span = cells[6].xpath("span")
     open_seats = span.text.to_i
     if open_seats == 0
       :closed
