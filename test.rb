@@ -10,3 +10,6 @@ else
   puts "Name: " << info.name 
   puts "Schedule: " << info.schedule
 end
+
+puts s.get_class_status('201230', 'stu150')
+puts s.get_class_info('201230', 'stu150')
