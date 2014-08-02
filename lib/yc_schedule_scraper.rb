@@ -5,7 +5,7 @@ require_relative 'yc_class_info'
 class YcScheduleScraper
   def get_class_info(term_code, class_number)
     doc = fetch_info(term_code, class_number)
-    results_row = doc.xpath("//table[@id='resultsTable']/tr")[1] # skip 0 because it's the header
+    results_row = doc.xpath("//table[tr/th/a[text()='CRN']]/tr")[1] # skip 0 because it's the header
     if results_row.nil?
       return nil
     end
@@ -24,7 +24,7 @@ class YcScheduleScraper
 
   def get_class_status(term_code, class_number)
     doc = fetch_info(term_code, class_number)
-    results_row = doc.xpath("//table[@id='resultsTable']/tr")[1] # skip 0 because it's the header
+    results_row = doc.xpath("//table[tr/th/a[text()='CRN']]/tr")[1] # skip 0 because it's the header
     if results_row.nil?
       return nil
     end
@@ -52,22 +52,26 @@ private
 
   def fetch_info(term_code, class_number)
     # TODO have this rotate between servers
-    uri = URI("https://taylor.yc.edu/BANPROD/pkgyc_csweb.P_ClassSearchResults")
+    uri = URI('https://cleveland.yc.edu/MYSSB/pkgyc_csweb_external.P_ClassSearchResults')
     req = Net::HTTP::Post.new(uri.request_uri)
-    req.set_form_data({"web_session" => "",
-                              "intext" => "O",
-                              "term_code" => term_code,
-                              "sort_col" => "3",
-                              "sort_dir" => "A",
-                              "kw_scope" => "crn",
-                              "keyword" => class_number,
-                              "kw_opt" => "any",
-                              "subj_code" => "*",
-                        "campus" => "*"})
+    req.set_form_data({'web_session' => '',
+                              'term_code' => term_code,
+                              'keyword' => '',
+                              'kw_scope' => 'course',
+                              'kw_opt' => 'all',
+                              'sort_col' => '3',
+                              'sort_dir' => 'A',
+                              'online_flag' => '',
+                              'avail_flag' => '',
+                              'subj_code' => '*',
+                              'instr_session' => '*',
+                              'attr_type' => '*',
+                              'instructor' => '*',
+                              'weekday' => '*',
+                              'crn' => class_number,
+                        'campus' => '*'})
     http = Net::HTTP.new(uri.host, uri.port)
     http.use_ssl = true
-    http.ssl_version = :SSLv3
-    http.ca_file = File.join(File.dirname(File.dirname(__FILE__)), "AddTrustExternalCARoot.crt")
     res = http.start do |http| 
       res = http.request(req)
     end
